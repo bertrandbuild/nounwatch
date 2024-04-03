@@ -49,7 +49,7 @@ contract Manager is Users, FilesManager, Ownable {
 	) public {
 		// todo think on checks that should be done before calling
 		_createFile(_fileId, _transcriptCid, _analysisCid);
-		// ! the credits should decrease (we are not returning file info)? in case they should are we sure that the msg.sender is the user?
+		// ! the credits should decrease (we are not returning file info)? in case they should, are we sure that the msg.sender is the user?
 		// ! if credits should be decreased, should also check the user has credits
 	}
 
