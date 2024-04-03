@@ -53,7 +53,7 @@ const config: HardhatUserConfig = {
     },
     galadriel: {
       chainId: 696969,
-      url: "https://testnet.galadriel.com/",
+      url: "https://devnet.galadriel.com/",
       accounts: galadrielDevnet,
     },
   },
