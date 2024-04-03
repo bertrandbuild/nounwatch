@@ -1,15 +1,32 @@
-# 🏗 ----  Hackathon
+# ⌐◨-◨  Nounwatch ⌐◨-◨
 
-🧪
-⚙️ Built using NextJS, RainbowKit, Hardhat, Wagmi, Viem, and Typescript.
+On-chain data aggregator that turns long youtube videos of crypto influencers into AI summarized insights quick to read & visualize.
 
-- ✅ **Contract Hot Reload**: Your frontend auto-adapts to your smart contract as you edit it.
-- 🪝 **[Custom hooks](https://docs.scaffoldeth.io/hooks/)**: Collection of React hooks wrapper around [wagmi](https://wagmi.sh/) to simplify interactions with smart contracts with typescript autocompletion.
-- 🧱 [**Components**](https://docs.scaffoldeth.io/components/): Collection of common web3 components to quickly build your frontend.
-- 🔥 **Burner Wallet & Local Faucet**: Quickly test your application with a burner wallet and local faucet.
-- 🔐 **Integration with Wallet Providers**: Connect to different wallet providers and interact with the Ethereum network.
+**[View demo](https://ethglobal.com/showcase/nounwatch-vz83z)**
 
-![Debug Contracts tab](https://github.com/scaffold-eth/scaffold-eth-2/assets/55535804/b237af0c-5027-4849-a5c1-2e31495cccb1)
+🧪 Tech stack
+
+- AI : GaladrielAI L1 oracle
+- Frontend :  Scaffoldeth / NextJS / Wagmi / Viem / RainbowKit
+- Chain : Hardhat
+- Storage : Filecoin / Lighthouse
+- Typescript
+- Design : Nouns
+
+## Features
+
+- Query one video and get analysis
+- Display a fear&greed index + key fundamental & technical analysis
+- Using testnets
+
+## In progress
+
+- [x] New frontend code
+- [x] New offchain computation to get transcript (remote python aws)
+- [ ] Implement most of the logic in a smart contract
+- [ ] Implement Tableland
+- [ ] Deploy on Fleek
+- [ ] Add video feed with credit plan
 
 ## Requirements
 
