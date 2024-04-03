@@ -1,7 +1,5 @@
 import { ethers } from "hardhat";
 
-const AGENT_PROMPT = "Your are an AI assistant expert in finance and market psychology.";
-
 async function main() {
   const oracleAddress: string = await deployOracle();
   console.log();

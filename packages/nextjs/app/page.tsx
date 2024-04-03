@@ -1,13 +1,61 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
+import { getFileUrl, uploadText } from "~~/services/filecoin";
+import { extractVideoId, getSummarizedTranscript, getTranscript } from "~~/services/transcript";
 
 const Home: NextPage = () => {
   const { address: connectedAddress } = useAccount();
+  const [content, setContent] = useState<any>();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  const handleSubmit = async (videoUrl: string) => {
+    setIsLoading(true);
+    const videoId = extractVideoId(videoUrl);
+    if (!videoUrl || !videoUrl.length || !videoId) {
+      setIsLoading(false);
+      // TODO: handle error
+      return;
+    }
+    if (videoId) {
+      try {
+        const isDev = true;
+        if (isDev) {
+          setIsLoading(true);
+          const aiInsights = await getSummarizedTranscript("");
+          console.log(aiInsights);
+          window.setTimeout(() => {
+            setContent(aiInsights);
+            setIsLoading(false);
+            setIsLoaded(true);
+          }, 4000);
+        } else {
+          let transcript = await getTranscript(videoId);
+          console.log(transcript);
+          transcript = transcript.slice(0, 11000); // TODO: handle longer transcripts
+          const aiInsights = await getSummarizedTranscript(transcript);
+          console.log(aiInsights);
+          window.setTimeout(() => {
+            const content = {
+              ...aiInsights, // TODO: add ai insights (only for dev)
+            };
+            setContent(content);
+            setIsLoading(false);
+            setIsLoaded(true);
+          }, 100);
+        }
+      } catch (error) {
+        console.error(error);
+        setIsLoading(false);
+      }
+    }
+  };
 
   return (
     <>
@@ -28,14 +76,28 @@ const Home: NextPage = () => {
             </code>
           </p>
           <p className="text-center text-lg">
-            Edit your smart contract{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              YourContract.sol
-            </code>{" "}
-            in{" "}
-            <code className="italic bg-base-300 text-base font-bold max-w-full break-words break-all inline-block">
-              packages/hardhat/contracts
-            </code>
+            Enter a YouTube video URL to get started{" "}
+            <form
+              onSubmit={event => {
+                event.preventDefault(); // Prevent the default form submission behavior
+                const formData = new FormData(event.currentTarget);
+                const url = formData.get("videoUrl");
+                handleSubmit(url?.toString() || "");
+              }}
+            >
+              <input type="text" name="videoUrl" className="input input-bordered" />
+              <button type="submit" className="btn btn-primary">
+                Submit
+              </button>
+            </form>
+            {isLoading && <span className="loading loading-spinner loading-lg"></span>}
+            {isLoaded && <span>Loaded!</span>}
+            {content && (
+              <>
+                <p className="mt-4">Transcript:</p>
+                <p className="text-lg">{content.transcript}</p>
+              </>
+            )}
           </p>
         </div>
 
