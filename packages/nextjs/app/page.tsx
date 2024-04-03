@@ -41,9 +41,13 @@ const Home: NextPage = () => {
           transcript = transcript.slice(0, 11000); // TODO: handle longer transcripts
           const aiInsights = await getSummarizedTranscript(transcript);
           console.log(aiInsights);
+          const transcriptCid = await uploadText(JSON.stringify(transcript));
+          const aiInsightsCid = await uploadText(JSON.stringify(aiInsights));
           window.setTimeout(() => {
             const content = {
               ...aiInsights, // TODO: add ai insights (only for dev)
+              analyzisFileUrl: getFileUrl(aiInsightsCid?.data.Hash),
+              transcriptFileUrl: getFileUrl(transcriptCid?.data.Hash),
             };
             setContent(content);
             setIsLoading(false);
