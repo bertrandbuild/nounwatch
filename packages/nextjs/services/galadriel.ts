@@ -1,5 +1,5 @@
-import { ABI } from "../abis/abi";
-import { BigNumber, Contract, Wallet, getDefaultProvider } from "ethers";
+import { ABI } from "../utils/abis/abi";
+import { Contract, Wallet, ethers } from "ethers";
 
 export interface GptQuery {
   content: string;
@@ -8,7 +8,7 @@ export interface GptQuery {
 }
 export type GptRole = "assistant" | "user" | "system";
 
-function getId(receipt, contract: Contract) {
+function getId(receipt: any, contract: Contract) {
   let id;
   for (const log of receipt.logs) {
     try {
@@ -16,8 +16,7 @@ function getId(receipt, contract: Contract) {
       const parsedLog = contract.interface.parseLog(log);
       if (parsedLog && parsedLog.name === "ChatCreated") {
         // Second event argument
-        // id = ethers.toNumber(parsedLog.args[1])
-        id = BigNumber.from(parsedLog.args[1]).toNumber();
+        id = ethers.toNumber(parsedLog.args[1]);
       }
     } catch (error) {
       // This log might not have been from your contract, or it might be an anonymous log
@@ -69,21 +68,23 @@ const getPrompt = (transcript: string) => {
 };
 
 export async function getSummarizedTranscript(transcript: string) {
-  const contractAddress = process.env.NEXT_PUBLIC_GPT_CONTRACT_ADDRESS;
-  // const [signer] = await ethers.getSigners(); 
-  // TODO: update to handle signing in backend to secure key
-  const privateKey = process.env.NEXT_PUBLIC_PRIVATE_KEY_LOCALHOST;
-  console.log("Using private key:", privateKey);
-  const wallet = new Wallet(privateKey);
-  const provider = getDefaultProvider(process.env.NEXT_PUBLIC_INFURA_URL + process.env.NEXT_PUBLIC_INFURA_ID);
-  const signer = wallet.connect(provider);
-  console.log("Connected to wallet");
-  console.log(privateKey, contractAddress, signer, provider);
+  const smallerTranscript = transcript.slice(0, 11000); // TODO: handle longer transcripts
 
-  const contract = new Contract(contractAddress, ABI, signer);
+  if (!process.env.NEXT_PUBLIC_INFURA_ID) throw Error("Missing INFURA_ID in .env");
+  if (!process.env.NEXT_PUBLIC_INFURA_URL) throw Error("Missing INFURA_URL in .env");
+  const rpcUrl = process.env.NEXT_PUBLIC_INFURA_URL + process.env.NEXT_PUBLIC_INFURA_ID;
+  const privateKey = process.env.NEXT_PUBLIC_PRIVATE_KEY_LOCALHOST;
+  if (!privateKey) throw Error("Missing PRIVATE_KEY in .env");
+  const contractAddress = process.env.NEXT_PUBLIC_GPT_CONTRACT_ADDRESS;
+  if (!contractAddress) throw Error("Missing CHAT_CONTRACT_ADDRESS in .env");
+
+  const provider = new ethers.JsonRpcProvider(rpcUrl);
+  const wallet = new Wallet(privateKey, provider);
+  const contract = new Contract(contractAddress, ABI, wallet);
+
   console.log(contract);
 
-  const prompt = getPrompt(transcript);
+  const prompt = getPrompt(smallerTranscript);
   console.log(prompt);
 
   // Call the startGpt function
@@ -91,7 +92,7 @@ export async function getSummarizedTranscript(transcript: string) {
   const receipt = await transactionResponse.wait();
 
   // Get the ID from transaction receipt logs
-  let id = getId(receipt, contract);
+  const id = getId(receipt, contract);
   if (!id && id !== 0) {
     console.error("Could not get ID");
     return;

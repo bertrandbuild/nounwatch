@@ -7,7 +7,8 @@ import { useAccount } from "wagmi";
 import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { Address } from "~~/components/scaffold-eth";
 import { getFileUrl, uploadText } from "~~/services/filecoin";
-import { extractVideoId, getSummarizedTranscript, getTranscript } from "~~/services/transcript";
+import { getSummarizedTranscript } from "~~/services/galadriel";
+import { extractVideoId, getTranscript } from "~~/services/transcript";
 
 const Home: NextPage = () => {
   const { address: connectedAddress } = useAccount();
@@ -20,12 +21,13 @@ const Home: NextPage = () => {
     const videoId = extractVideoId(videoUrl);
     if (!videoUrl || !videoUrl.length || !videoId) {
       setIsLoading(false);
-      // TODO: handle error
+      console.error("Invalid video URL");
+      // TODO: handle error nicely for the user
       return;
     }
     if (videoId) {
       try {
-        const isDev = true;
+        const isDev = false;
         if (isDev) {
           setIsLoading(true);
           const aiInsights = await getSummarizedTranscript("");
@@ -36,10 +38,9 @@ const Home: NextPage = () => {
             setIsLoaded(true);
           }, 4000);
         } else {
-          let transcript = await getTranscript(videoId);
+          const transcript = await getTranscript(videoId);
           console.log(transcript);
-          transcript = transcript.slice(0, 11000); // TODO: handle longer transcripts
-          const aiInsights = await getSummarizedTranscript(transcript);
+          const aiInsights: any = await getSummarizedTranscript(transcript);
           console.log(aiInsights);
           const transcriptCid = await uploadText(JSON.stringify(transcript));
           const aiInsightsCid = await uploadText(JSON.stringify(aiInsights));
