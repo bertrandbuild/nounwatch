@@ -23,6 +23,7 @@ On-chain data aggregator that turns long youtube videos of crypto influencers in
 
 - [x] New frontend code
 - [x] New offchain computation to get transcript (remote python aws)
+- [ ] Update Galadriel to new devnet and new contracts
 - [ ] Implement most of the logic in a smart contract
 - [ ] Implement Tableland
 - [ ] Deploy on Fleek
