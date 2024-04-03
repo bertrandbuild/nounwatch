@@ -90,6 +90,14 @@ const Home: NextPage = () => {
                 Submit
               </button>
             </form>
+            {isLoading && <span className="loading loading-spinner loading-lg"></span>}
+            {isLoaded && <span>Loaded!</span>}
+            {content && (
+              <>
+                <p className="mt-4">Transcript:</p>
+                <p className="text-lg">{content.transcript}</p>
+              </>
+            )}
           </p>
         </div>
 

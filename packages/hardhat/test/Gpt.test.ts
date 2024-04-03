@@ -80,7 +80,7 @@ describe("ChatGpt", function () {
       );
     });
     it("Oracle cannot add 2 responses", async () => {
-      const { chatGpt, oracle, allSigners, owner } = await loadFixture(deploy);
+      const { chatGpt, oracle, allSigners } = await loadFixture(deploy);
       const oracleAccount = allSigners[6];
       await chatGpt.setOracleAddress(oracle.target);
       await oracle.updateWhitelist(oracleAccount, true);
@@ -92,7 +92,7 @@ describe("ChatGpt", function () {
       const randomAccount = allSigners[7];
       await chatGpt.setOracleAddress(randomAccount);
 
-      await expect(chatGpt.connect(randomAccount).onOracleLlmResponse(0, "Hi", "")).to.be.revertedWith(
+      await expect(chatGpt.connect(randomAccount).onOracleLlmResponse(0, "Hi")).to.be.revertedWith(
         "No message to respond to",
       );
     });
