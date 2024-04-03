@@ -35,7 +35,6 @@ const config: HardhatUserConfig = {
       viaIR: true,
     },
   },
-  defaultNetwork: "localhost",
   namedAccounts: {
     deployer: {
       default: 0,
