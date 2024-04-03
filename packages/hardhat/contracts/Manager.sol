@@ -7,9 +7,14 @@ import { Users } from "./Users.sol";
 import { FilesManager } from "./FilesManager.sol";
 
 contract Manager is Users, FilesManager, Ownable {
-	uint256 creditsPrice;
+	uint256 public creditsPrice;
 
 	event CreditsPriceUpdated(uint256 newCreditsPrice);
+	event FileInformation(
+		uint256 fileId,
+		string transcriptCid,
+		string analysisCid
+	);
 
 	error InvalidNewCreditsPrice(uint256 newCreditsPrice);
 	error InvalidValue(uint256 value, uint256 expectedValue);
@@ -34,7 +39,7 @@ contract Manager is Users, FilesManager, Ownable {
 	 * @param _newCreditsPrice The new credit price.
 	 * emits CreditsPriceUpdated event.
 	 */
-	function updateFee(uint256 _newCreditsPrice) public onlyOwner {
+	function updateCreditPrice(uint256 _newCreditsPrice) public onlyOwner {
 		uint256 _oldCreditsPrice = creditsPrice;
 		if (_newCreditsPrice == 0 || _newCreditsPrice == _oldCreditsPrice)
 			revert InvalidNewCreditsPrice(_newCreditsPrice);
@@ -53,11 +58,13 @@ contract Manager is Users, FilesManager, Ownable {
 		// ! if credits should be decreased, should also check the user has credits
 	}
 
-	function getFile(uint256 _fileId) public returns (FileInfo memory) {
+	function getFile(uint256 _fileId) public {
 		if (credits[msg.sender] == 0) revert NotEnoughCredits(msg.sender);
 		_useCredit(msg.sender);
 		// todo think if other checks should be added before calling
-		return _getFile(_fileId);
+		// emit the file information in an event because the function can not be view
+		FileInfo memory file = _getFile(_fileId);
+		emit FileInformation(file.fileId, file.transcriptCid, file.analysisCid);
 	}
 
 	// helper
