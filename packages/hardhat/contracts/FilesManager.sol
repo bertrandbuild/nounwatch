@@ -4,6 +4,8 @@ pragma solidity ^0.8.21;
 contract FilesManager {
 	// Mapping to store the file info
 	mapping(uint256 fileId => FileInfo) public filesInfoMap;
+	uint256 private _tableId; // Unique table ID
+    string private constant _TABLE_PREFIX = "crypto_n_table"; // Custom table prefix
 
 	struct FileInfo {
 		uint256 fileId;
@@ -40,6 +42,8 @@ contract FilesManager {
 		});
 		filesInfoMap[_fileId] = _newFile;
 
+		// this.insertIntoTable(_id, _fileId, _transcriptCid, _analysisCid);
+
 		emit FileCreated(_newFile);
 		// todo add logic to store the info in TableLand
 	}
@@ -57,4 +61,132 @@ contract FilesManager {
 		retFileInfo = filesInfoMap[_fileId];
 		if (retFileInfo.fileId == 0) revert FileDoesNotExist(_fileId);
 	}
+
+	    /**
+    * @notice Creates a new table with predefined schema
+    * @dev The table schema includes an ID, file ID, and CIDs for transcript and analysis
+    */
+       /**
+    * @notice Creates a new table with predefined schema
+    * @dev The table schema includes an ID, file ID, and CIDs for transcript and analysis
+    */
+    function createTable() public payable {
+    //   _tableId = TablelandDeployments.get().create(
+    //         address(this),
+    //         SQLHelpers.toCreateFromSchema(
+    //           "id integer primary key," // Notice the trailing comma
+    //           "fileId integer,"
+    //           "transcriptCid text,"
+    //           "analysisCid text",
+
+    //           _TABLE_PREFIX
+    //         )
+    //     );
+    }
+
+	    /**
+    * @notice Inserts a new row into the table
+    * @param id The unique identifier for the row
+    * @param fileId The ID of the file associated with the row
+    * @param transcriptCid The CID for the transcript
+    * @param analysisCid The CID for the analysis
+    */
+    function insertIntoTable(uint256 id, uint256 fileId, string memory transcriptCid, string memory analysisCid) external {
+        // TablelandDeployments.get().mutate(
+        //     address(this), // Table owner, i.e., this contract
+        //     _tableId,
+        //     SQLHelpers.toInsert(
+        //         _TABLE_PREFIX,
+        //         _tableId,
+        //         "id,fileId,transcriptCid,analysisCid",
+        //         string.concat(
+        //             Strings.toString(id), // Convert to a string
+        //             ",",
+        //             Strings.toString(fileId), // Convert to a string
+        //             ",",
+        //             SQLHelpers.quote(transcriptCid), // Wrap strings in single quotes with the `quote` method
+        //             ",",
+        //             SQLHelpers.quote(analysisCid) // Wrap strings in single quotes with the `quote` method
+        //         )
+        //     )
+        // );
+    }
+
+
+    /**
+    * @notice Updates a specific row in the table
+    * @param id The unique identifier for the row to update
+    * @param fileId The new ID of the file associated with the row
+    * @param transcriptCid The new CID for the transcript
+    * @param analysisCid The new CID for the analysis
+    */
+    function updateTable(uint256 id, uint256 fileId, string memory transcriptCid, string memory analysisCid)  external {
+        // Set the values to update
+        // string memory setters = string.concat(
+        //     "fileId=", Strings.toString(fileId),
+        //     ",transcriptCid=", SQLHelpers.quote(transcriptCid),
+        //     ",analysisCid=", SQLHelpers.quote(analysisCid)
+        // );
+
+
+
+        // string memory filters = string.concat(
+        //     "id=",
+        //     Strings.toString(id)
+        // );
+        // // Mutate a row at 
+        // TablelandDeployments.get().mutate(
+        //     address(this),
+        //     _tableId,
+        //     SQLHelpers.toUpdate(_TABLE_PREFIX, _tableId, setters, filters)
+        // );
+    }
+
+    /**
+    * @notice Deletes a specific row from the table
+    * @param id The unique identifier for the row to delete
+    */
+    function deleteFromTable(uint256 id) external {
+        // Specify filters for which row to delete
+        // string memory filters = string.concat(
+        //     "id=",
+        //     Strings.toString(id)
+        // );
+        // // Mutate a row at `id`
+        // TablelandDeployments.get().mutate(
+        //     address(this),
+        //     _tableId,
+        //     SQLHelpers.toDelete(_TABLE_PREFIX, _tableId, filters)
+        // );
+    }
+
+    /**
+    * @notice Sets the access control for the table
+    * @param controller The address of the controller contract
+    */
+    function setAccessControl(address controller) external {
+        // TablelandDeployments.get().setController(
+        //     address(this), // Table owner, i.e., this contract
+        //     _tableId,
+        //     controller // Set the controller address—a separate controller contract
+        // );
+    }
+
+    /**
+    * @notice Returns the ID of the table
+    * @return The table ID
+    */
+    function getTableId() external view returns (uint256) {
+        return _tableId;
+    }
+
+
+    /**
+    * @notice Returns the name of the table
+    * @return The table name
+    */
+    function getTableName() external view returns (string memory) {
+        // return SQLHelpers.toNameFromId(_TABLE_PREFIX, _tableId);
+    }
+
 }
