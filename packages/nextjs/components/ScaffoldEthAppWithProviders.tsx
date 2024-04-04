@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { RainbowKitProvider, darkTheme, lightTheme } from "@rainbow-me/rainbowkit";
+import { RainbowKitProvider, darkTheme, lightTheme } from "@rainbow-me/rainbowkit"; // IEL
 import { useTheme } from "next-themes";
 import { Toaster } from "react-hot-toast";
 import { WagmiConfig } from "wagmi";
@@ -13,6 +13,14 @@ import { useNativeCurrencyPrice } from "~~/hooks/scaffold-eth";
 import { useGlobalState } from "~~/services/store/store";
 import { wagmiConfig } from "~~/services/web3/wagmiConfig";
 import { appChains } from "~~/services/web3/wagmiConnectors";
+
+import {
+  ThirdwebProvider,
+  metamaskWallet,
+  coinbaseWallet,
+  walletConnect,
+} from "@thirdweb-dev/react";
+ 
 
 const ScaffoldEthApp = ({ children }: { children: React.ReactNode }) => {
   const price = useNativeCurrencyPrice();
@@ -48,13 +56,27 @@ export const ScaffoldEthAppWithProviders = ({ children }: { children: React.Reac
   return (
     <WagmiConfig config={wagmiConfig}>
       <ProgressBar />
-      <RainbowKitProvider
+      {/* <RainbowKitProvider
         chains={appChains.chains}
         avatar={BlockieAvatar}
         theme={mounted ? (isDarkMode ? darkTheme() : lightTheme()) : lightTheme()}
       >
         <ScaffoldEthApp>{children}</ScaffoldEthApp>
-      </RainbowKitProvider>
+      </RainbowKitProvider> */}
+
+     <ThirdwebProvider
+      supportedWallets={[
+        metamaskWallet({
+          recommended: true,
+        }),
+        coinbaseWallet(),
+        walletConnect(),
+      ]}
+      clientId="<your_client_id>"
+    >
+        <ScaffoldEthApp>{children}</ScaffoldEthApp>
+      </ThirdwebProvider>
+
     </WagmiConfig>
   );
 };
