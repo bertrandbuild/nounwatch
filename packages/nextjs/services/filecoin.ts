@@ -1,6 +1,6 @@
 import lighthouse from "@lighthouse-web3/sdk";
 
-const apiKey = process.env.FILECOIN_KEY;
+const apiKey = process.env.NEXT_PUBLIC_FILECOIN_KEY;
 
 // function to uploadText
 export const uploadText = async (text: string) => {
